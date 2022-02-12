@@ -1,12 +1,10 @@
 package com.Hollux.main;
 
-import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -33,8 +31,8 @@ public class GamePanel extends JPanel implements ActionListener{
 	static char defDirection = 'R';
 	
 	
-	final int xCord[] = new int[GAME_UNITS];
-	final int yCord[] = new int[GAME_UNITS];
+	final int[] xCord = new int[GAME_UNITS];
+	final int[] yCord = new int[GAME_UNITS];
 	
 	int bodyParts = defaultBodyParts;
 	int applesEaten;
@@ -46,7 +44,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	Random rand;
 
 	//constant phrases and fonts
-	final String GAME_FONT = "Ink Free";
+	static final String GAME_FONT = "Ink Free";
 	
 	//key adapter/listener
 	MyKeyAdapter customAdapter = new MyKeyAdapter();
@@ -67,6 +65,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		timer.start();
 	}
 	
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		draw(g);
@@ -106,7 +105,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			FontMetrics fontMetrics = getFontMetrics(g.getFont());
 			g.drawString("Score: " + applesEaten, (SCREEN_WIDTH-fontMetrics.stringWidth("Score: " + applesEaten))/2, g.getFont().getSize());
 			
-			
+			//fix direction
 			if(customAdapter.getNeedBool()){
 				customAdapter.setNeedBool(false);
 				char newDirection = KeyEvent.getKeyText(customAdapter.getLastCode()).substring(0,1).toCharArray()[0];	//retrieves the last direction 
@@ -152,9 +151,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		default:
 			break;
 		}
-			
-		
-		
 		/*++y -> down
 		 *--y -> up
 		 *++x -> right
@@ -216,7 +212,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			move();
 			checkApple();
 			checkCollisions();
-			
 		}
 		repaint();
 	}
@@ -240,13 +235,14 @@ public class GamePanel extends JPanel implements ActionListener{
 		@Override
 		public void keyPressed(KeyEvent e) {
 			
+			//ignore duplicate inputs
 			if(lastCode!=null && lastCode == e.getKeyCode()) {
 				return;
 			}
+			
+			//if the snake hasn't moved yet: store the value it was going to move to and ignore this input
 			if(running && currentX == xCord[0] && currentY == yCord[0]) {
-				//direction = 'j';
-				//System.out.println("Current Direction: " + direction + " KeyCode: " + e.getKe);
-				System.out.println("last code: " + lastCode + " character input: " + e.getKeyChar() + " Info on key pressed: " + KeyEvent.getKeyText(e.getKeyCode()) + " Last Key: " + KeyEvent.getKeyText(lastCode));
+				//System.out.println("Key pressed: " + KeyEvent.getKeyText(e.getKeyCode()) + " Last Key: " + KeyEvent.getKeyText(lastCode));	//debug
 				lastCode = e.getKeyCode();
 				needToFixError = true;
 				return;
@@ -255,26 +251,22 @@ public class GamePanel extends JPanel implements ActionListener{
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_LEFT:
 				if(direction != 'R') {
-					//direction = 'L';
-					changeDirection('L');
+					direction = 'L';
 				}
 				break;
 			case KeyEvent.VK_RIGHT:
 				if(direction != 'L') {
-					//direction = 'R';
-					changeDirection('R');
+					direction = 'R';
 				}
 				break;
 			case KeyEvent.VK_UP:
 				if(direction != 'D') {
-					//direction = 'U';
-					changeDirection('U');
+					direction = 'U';
 				}
 				break;
 			case KeyEvent.VK_DOWN:
 				if(direction != 'U') {
-					//direction = 'D';
-					changeDirection('D');
+					direction = 'D';
 				}
 				break;
 			case KeyEvent.VK_R:
@@ -291,27 +283,11 @@ public class GamePanel extends JPanel implements ActionListener{
 			default:
 				break;
 			}
+			//save positions before the next change
+				lastCode = e.getKeyCode();
+				currentX = xCord[0];
+				currentY = yCord[0];
 			
-			lastCode = e.getKeyCode();
-			currentX = xCord[0];
-			currentY = yCord[0];
-			
-		}
-		
-		private Robot r;
-		
-		public MyKeyAdapter() {
-			try {
-				r = new Robot();
-			} catch (AWTException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		private void changeDirection(char newDirection) {
-			//r.delay(250);
-			direction = newDirection;
-			System.out.println("current direction: " + newDirection);	//the value is still changing quickly despite delay
 		}
 	}
 	
