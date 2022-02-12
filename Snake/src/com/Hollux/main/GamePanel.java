@@ -109,7 +109,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			if(customAdapter.getNeedBool()){
 				customAdapter.setNeedBool(false);
 				char newDirection = KeyEvent.getKeyText(customAdapter.getLastCode()).substring(0,1).toCharArray()[0];	//retrieves the last direction 
-				//System.out.println("changing direction to: " + newDirection);	//debug
 				direction = newDirection;
 			}
 			
@@ -242,7 +241,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			
 			//if the snake hasn't moved yet: store the value it was going to move to and ignore this input
 			if(running && currentX == xCord[0] && currentY == yCord[0]) {
-				//System.out.println("Key pressed: " + KeyEvent.getKeyText(e.getKeyCode()) + " Last Key: " + KeyEvent.getKeyText(lastCode));	//debug
 				lastCode = e.getKeyCode();
 				needToFixError = true;
 				return;
